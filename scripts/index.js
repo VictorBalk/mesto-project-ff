@@ -5,7 +5,7 @@ const oTeemplate = document.querySelector("#card-template").content;
 const oContainerCard = document.querySelector('.places__list');
 
 // @todo: Функция создания карточки
-function createCard(oCard, removefunction) {
+function createCard(oCard, removeFunction) {
     const oCardElement = oTeemplate.querySelector(".places__item").cloneNode(true);
 
     const oImg = oCardElement.querySelector(".card__image");
@@ -14,7 +14,7 @@ function createCard(oCard, removefunction) {
     oImg.setAttribute('alt', oCard.alt);
 
     const oDeleteButton = oCardElement.querySelector(".card__delete-button");
-    oDeleteButton.addEventListener('click', removefunction);
+    oDeleteButton.addEventListener('click', removeFunction);
 
     const oTitle = oCardElement.querySelector(".card__title");
     oTitle.textContent = oCard.name;
@@ -25,8 +25,8 @@ function createCard(oCard, removefunction) {
     return oCardElement;
 }
 
-function renderCard(oCard, removefunction) {
-    oContainerCard.append(createCard(oCard, removefunction));
+function renderCard(oCard, removeFunction) {
+    oContainerCard.append(createCard(oCard, removeFunction));
 }
 
 
