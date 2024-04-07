@@ -1,3 +1,8 @@
+import initialCards from './cards.js';
+
+import '../pages/index.css';
+
+
 // @todo: Темплейт карточки
 const oTeemplate = document.querySelector("#card-template").content;
 
@@ -43,3 +48,7 @@ initialCards.forEach((item) => {
 function onLike(oEvent) {
     // alert("Вы нажали на кнопку лайк");
 }
+
+
+const oPopUpImage = document.querySelector('.popup_type_image');
+const oCardElement = oPopUpImage.querySelector(".places__item").cloneNode(true);
