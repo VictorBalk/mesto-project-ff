@@ -6,7 +6,7 @@ import Zabaykalye from "../images/cards/Zabaykalye.jpg";
 import SaintPetersburg from "../images/cards/SaintPetersburg.jpg";
 
 // @todo: Темплейт карточки
-const oTeemplate = document.querySelector("#card-template").content;
+const cardTemplate = document.querySelector("#card-template").content;
 
 const initialCards = [
   {
@@ -41,48 +41,37 @@ const initialCards = [
   },
 ];
 // @todo: Функция создания карточки
-function createCard(oCard, removeFunction, linkFunction, openPopUpFunction) {
-  const oCardElement = oTeemplate
+function createCard(card, removeFunction, linkFunction, openPopUpFunction) {
+  const cardElement = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
 
-  const oImg = oCardElement.querySelector(".card__image");
+  const cardImage = cardElement.querySelector(".card__image");
 
-  oImg.setAttribute("src", oCard.link);
-  oImg.setAttribute("alt", oCard.alt);
+  cardImage.setAttribute("src", card.link);
+  cardImage.setAttribute("alt", card.alt);
 
-  oImg.addEventListener("click", function (oEvent) {
-    const oPopUpImg = document.querySelector(".popup__image");
+  cardImage.addEventListener("click", openPopUpFunction);
 
-    oPopUpImg.setAttribute("src", oCard.link);
-    oPopUpImg.setAttribute("alt", oCard.alt);
+  const deleteButton = cardElement.querySelector(".card__delete-button");
+  deleteButton.addEventListener("click", removeFunction);
 
-    const oPopUpCaptyion = document.querySelector(".popup__caption");
-    oPopUpCaptyion.textContent = oCard.name;
+  const cardTitle = cardElement.querySelector(".card__title");
+  cardTitle.textContent = card.name;
 
-    const oPopUpImage = document.querySelector(".popup_type_image");
-    openPopUpFunction(oPopUpImage);
-  });
+  const cardLikeButton = cardElement.querySelector(".card__like-button");
+  cardLikeButton.addEventListener("click", linkFunction);
 
-  const oDeleteButton = oCardElement.querySelector(".card__delete-button");
-  oDeleteButton.addEventListener("click", removeFunction);
-
-  const oTitle = oCardElement.querySelector(".card__title");
-  oTitle.textContent = oCard.name;
-
-  const oLikeButton = oCardElement.querySelector(".card__like-button");
-  oLikeButton.addEventListener("click", linkFunction);
-
-  return oCardElement;
+  return cardElement;
 }
 
 // @todo: Функция удаления карточки
-function onRemoveCard(oEvent) {
-  oEvent.target.closest(".places__item").remove();
+function removeCard(evt) {
+  evt.target.closest(".places__item").remove();
 }
 
-function onLike(oEvent) {
-  oEvent.target.classList.toggle("card__like-button_is-active");
+function like(evt) {
+  evt.target.classList.toggle("card__like-button_is-active");
 }
 
-export { initialCards, createCard, onRemoveCard, onLike };
+export { initialCards, createCard, removeCard, like };

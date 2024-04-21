@@ -1,70 +1,125 @@
-import * as oCards from "./cards.js";
-import * as oModal from "./modal.js";
-import * as oFormUtill from "./formsUtill.js";
-
 import "../pages/index.css";
 
-// @todo: DOM узлы
-const oContainerCard = document.querySelector(".places__list");
+import * as cards from "./cards.js";
+import * as modal from "./modal.js";
 
-function renderCard(oCard, removeFunction, linkFunction, openPopUpFunction) {
-  oContainerCard.append(
-    oCards.createCard(oCard, removeFunction, linkFunction, openPopUpFunction)
+// @todo: DOM узлы
+const containerCard = document.querySelector(".places__list");
+const popUpImage = document.querySelector(".popup_type_image");
+const popUpImages = popUpImage.querySelector(".popup__image");
+const popUpCaption = popUpImage.querySelector(".popup__caption");
+const popUpNewCard = document.querySelector(".popup_type_new-card");
+const popUpEdit = document.querySelector(".popup_type_edit");
+const profileInfo = document.querySelector(".profile__info");
+const formNewPlace = document.forms["new-place"];
+const formEditProfile = document.forms["edit-profile"];
+
+function renderCard(card, removeFunction, linkFunction, openPopUpFunction) {
+  containerCard.prepend(
+    cards.createCard(card, removeFunction, linkFunction, openPopUpFunction)
   );
 }
 
 // @todo: Вывести карточки на страницу
-oCards.initialCards.forEach((item) => {
-  renderCard(item, oCards.onRemoveCard, oCards.onLike, oModal.openPopUp);
+cards.initialCards.forEach((item) => {
+  renderCard(item, cards.removeCard, cards.like, openPopUpImage);
 });
 
-const oPopUpImage = document.querySelector(".popup_type_image");
-oModal.addEventCloseBtn(oPopUpImage);
-oModal.addEventCloseBlur(oPopUpImage);
+modal.addEventCloseBtn(popUpImage);
+modal.addEventCloseBlur(popUpImage);
 
-const oPopUpNewCard = document.querySelector(".popup_type_new-card");
-oModal.addEventCloseBtn(oPopUpNewCard);
-oModal.addEventCloseBlur(oPopUpNewCard);
-oModal.addEventOpenPopUpNew(oPopUpNewCard, ".profile__add-button");
+modal.addEventCloseBtn(popUpNewCard);
+modal.addEventCloseBlur(popUpNewCard);
+addEventOpenPopUpNew(popUpNewCard, ".profile__add-button");
 
-const oPopUpEdit = document.querySelector(".popup_type_edit");
-oModal.addEventCloseBtn(oPopUpEdit);
-oModal.addEventCloseBlur(oPopUpEdit);
-oModal.addEventOpenPopUpEdit(oPopUpEdit, ".profile__edit-button");
+modal.addEventCloseBtn(popUpEdit);
+modal.addEventCloseBlur(popUpEdit);
+addEventOpenPopUpEdit(popUpEdit, ".profile__edit-button");
 
-const formEditProfile = document.forms["edit-profile"];
 addEventSubmitForm(formEditProfile, handleFormEditProfileSubmit);
 
-function handleFormEditProfileSubmit(oEvent) {
-  const oInputsForm = oFormUtill.getInputsFormEdit();
-
-  const oTextFields = oFormUtill.getTextFieldsProfileInfo();
-
-  oTextFields.oInfoDescription.textContent = oInputsForm.oEditDescription.value;
-  oTextFields.oInfoTitle.textContent = oInputsForm.oEditName.value;
-  closePopUp();
-  oEvent.preventDefault();
-}
-
-function addEventSubmitForm(oForm, oFunct) {
-  oForm.addEventListener("submit", oFunct);
-}
-
-const formNewPlace = document.forms["new-place"];
 addEventSubmitForm(formNewPlace, handleFormNewPlaceSubmit);
 
-function handleFormNewPlaceSubmit(oEvent) {
-  const oForm = oEvent.target;
+function handleFormEditProfileSubmit(evt) {
+  evt.preventDefault();
+  const inputsForm = getInputsFormEdit();
 
-  const oPlaceName = oForm.elements["place-name"];
-  const oLink = oForm.elements.link;
+  const textFields = getTextFieldsProfileInfo();
 
-  const oItemCard = {
-    name: oPlaceName.value,
-    link: oLink.value,
-    alt: oPlaceName.value,
+  textFields.infoDescription.textContent =
+    inputsForm.editInputDescription.value;
+  textFields.infoTitle.textContent = inputsForm.editInputName.value;
+  modal.closePopUp();
+}
+
+function addEventSubmitForm(form, functionSubmit) {
+  form.addEventListener("submit", functionSubmit);
+}
+
+function handleFormNewPlaceSubmit(evt) {
+  evt.preventDefault();
+  const form = evt.target;
+  const placeNameInput = form.elements["place-name"];
+  const linkInput = form.elements.link;
+
+  const itemCard = {
+    name: placeNameInput.value,
+    link: linkInput.value,
+    alt: placeNameInput.value,
   };
-  renderCard(oItemCard, oCards.onRemoveCard, oCards.onLike, oModal.openPopUp);
-  oModal.closePopUp();
-  oEvent.preventDefault();
+
+  renderCard(itemCard, cards.removeCard, cards.like, openPopUpImage);
+  modal.closePopUp();
+}
+
+function addEventOpenPopUpEdit(container, sNameClass) {
+  document.querySelector(sNameClass).addEventListener("click", function (evt) {
+    setDefaultValueForPopUpEdit();
+    modal.openPopUp(container);
+  });
+}
+
+function setDefaultValueForPopUpEdit() {
+  const inputsForm = getInputsFormEdit();
+
+  const textFields = getTextFieldsProfileInfo();
+
+  inputsForm.editInputDescription.value =
+    textFields.infoDescription.textContent;
+  inputsForm.editInputName.value = textFields.infoTitle.textContent;
+}
+
+function addEventOpenPopUpNew(container, sNameClass) {
+  document.querySelector(sNameClass).addEventListener("click", function (evt) {
+    resetPopUpNew();
+    modal.openPopUp(container);
+  });
+}
+
+function resetPopUpNew() {
+  formNewPlace.reset();
+}
+
+function getInputsFormEdit() {
+  const editInputName = formEditProfile.elements.name;
+  const editInputDescription = formEditProfile.elements.description;
+
+  return { editInputName, editInputDescription };
+}
+
+function getTextFieldsProfileInfo() {
+  const infoTitle = profileInfo.querySelector(".profile__title");
+  const infoDescription = profileInfo.querySelector(".profile__description");
+
+  return { infoTitle, infoDescription };
+}
+
+function openPopUpImage(evt) {
+  const srcImage = evt.target.getAttribute("src");
+  const altImage = evt.target.getAttribute("alt");
+
+  popUpImages.setAttribute("src", srcImage);
+  popUpImages.setAttribute("alt", altImage);
+  popUpCaption.textContent = altImage;
+  modal.openPopUp(popUpImage);
 }
