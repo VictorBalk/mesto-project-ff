@@ -1,5 +1,7 @@
 import "../pages/index.css";
 import * as cards from "./cards.js";
+import * as modal from "./modal.js";
+import { clearValidation, enableValidation } from "./validation.js";
 import {
   getInitialCards,
   addNewCard,
@@ -10,8 +12,6 @@ import {
   updateAvatar,
   updateUserInfo,
 } from "./api.js";
-import { clearValidation, enableValidation } from "./validation.js";
-import * as modal from "./modal.js";
 
 // @todo: DOM узлы
 const containerCard = document.querySelector(".places__list");
