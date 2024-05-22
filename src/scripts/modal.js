@@ -5,7 +5,9 @@ function openPopUp(container) {
 
 function closePopUp() {
   const popUp = document.querySelector(".popup_is-opened");
-  popUp.classList.remove("popup_is-opened");
+  if (popUp) {
+    popUp.classList.remove("popup_is-opened");
+  }
   removeEscapeHandler();
 }
 

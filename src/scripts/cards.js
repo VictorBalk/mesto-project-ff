@@ -41,7 +41,7 @@ const initialCards = [
   },
 ];
 // @todo: Функция создания карточки
-function createCard(card, removeFunction, linkFunction, openPopUpFunction) {
+function createCard(card, removeFunction, linkFunction, openPopUpFunction, idUser) {
   const cardElement = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -49,12 +49,17 @@ function createCard(card, removeFunction, linkFunction, openPopUpFunction) {
   const cardImage = cardElement.querySelector(".card__image");
 
   cardImage.setAttribute("src", card.link);
-  cardImage.setAttribute("alt", card.alt);
+  cardImage.setAttribute("alt", card.name);
 
   cardImage.addEventListener("click", openPopUpFunction);
 
   const deleteButton = cardElement.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", removeFunction);
+
+  if (card.owner._id === idUser) {
+    deleteButton.addEventListener("click", removeFunction);
+  } else {
+    deleteButton.style.display = 'none';
+  }
 
   const cardTitle = cardElement.querySelector(".card__title");
   cardTitle.textContent = card.name;
@@ -62,16 +67,25 @@ function createCard(card, removeFunction, linkFunction, openPopUpFunction) {
   const cardLikeButton = cardElement.querySelector(".card__like-button");
   cardLikeButton.addEventListener("click", linkFunction);
 
+  if (card.likes.some(item => item._id === idUser)) {
+    like(cardLikeButton);
+  }
+
+  const cardLikeCount = cardElement.querySelector(".card__like-count");
+  cardLikeCount.textContent = card.likes.length;
+
+  cardElement.setAttribute("data-id", card._id);
+
   return cardElement;
 }
 
 // @todo: Функция удаления карточки
-function removeCard(evt) {
-  evt.target.closest(".places__item").remove();
+function removeCard(element) {
+  element.closest(".places__item").remove();
 }
 
-function like(evt) {
-  evt.target.classList.toggle("card__like-button_is-active");
+function like(element) {
+  element.classList.toggle("card__like-button_is-active");
 }
 
 export { initialCards, createCard, removeCard, like };
