@@ -4,6 +4,10 @@ import KurileIslands from "../images/cards/KurileIslands.jpg";
 import Moscow from "../images/cards/Moscow.jpg";
 import Zabaykalye from "../images/cards/Zabaykalye.jpg";
 import SaintPetersburg from "../images/cards/SaintPetersburg.jpg";
+import {
+  addLike,
+  deleteLike
+} from "./api.js";
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
@@ -41,7 +45,13 @@ const initialCards = [
   },
 ];
 // @todo: Функция создания карточки
-function createCard(card, removeFunction, linkFunction, openPopUpFunction, idUser) {
+function createCard(
+  card,
+  removeFunction,
+  linkFunction,
+  openPopUpFunction,
+  idUser
+) {
   const cardElement = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -53,12 +63,14 @@ function createCard(card, removeFunction, linkFunction, openPopUpFunction, idUse
 
   cardImage.addEventListener("click", openPopUpFunction);
 
+  cardElement.setAttribute("data-id", card._id);
+
   const deleteButton = cardElement.querySelector(".card__delete-button");
 
   if (card.owner._id === idUser) {
     deleteButton.addEventListener("click", removeFunction);
   } else {
-    deleteButton.style.display = 'none';
+    deleteButton.style.display = "none";
   }
 
   const cardTitle = cardElement.querySelector(".card__title");
@@ -67,14 +79,13 @@ function createCard(card, removeFunction, linkFunction, openPopUpFunction, idUse
   const cardLikeButton = cardElement.querySelector(".card__like-button");
   cardLikeButton.addEventListener("click", linkFunction);
 
-  if (card.likes.some(item => item._id === idUser)) {
+  if (card.likes.some((item) => item._id === idUser)) {
     like(cardLikeButton);
   }
 
   const cardLikeCount = cardElement.querySelector(".card__like-count");
   cardLikeCount.textContent = card.likes.length;
 
-  cardElement.setAttribute("data-id", card._id);
 
   return cardElement;
 }
@@ -84,8 +95,43 @@ function removeCard(element) {
   element.closest(".places__item").remove();
 }
 
-function like(element) {
+function toggleLikeClass(element) {
   element.classList.toggle("card__like-button_is-active");
 }
 
-export { initialCards, createCard, removeCard, like };
+function getItemId(element) {
+  return element.closest(".places__item").dataset.id;
+}
+
+function like(element) {
+
+  const idCard = getItemId(element);
+
+  const liked = function (data) {
+    toggleLikeClass(element);
+    const countElem = element
+      .closest(".card__like")
+      .querySelector(".card__like-count");
+    countElem.textContent = data.likes.length;
+  };
+
+  if (element.classList.contains("card__like-button_is-active")) {
+    deleteLike(idCard)
+      .then((data) => {
+        liked(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    addLike(idCard)
+      .then((data) => {
+        liked(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+}
+
+export { getItemId, createCard, removeCard, like };

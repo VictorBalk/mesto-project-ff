@@ -6,8 +6,6 @@ import {
   getInitialCards,
   addNewCard,
   deleteCard,
-  deleteLike,
-  addLike,
   getUserInfo,
   updateAvatar,
   updateUserInfo,
@@ -92,12 +90,11 @@ modal.addEventCloseBlur(popUpImage);
 modal.addEventCloseBtn(popUpUpdateAvatar);
 modal.addEventCloseBlur(popUpUpdateAvatar);
 
-modal.addEventCloseBtn(popUpNewCard);
-modal.addEventCloseBlur(popUpNewCard);
-addEventOpenPopUpNew(popUpNewCard, ".profile__add-button");
-
 modal.addEventCloseBtn(popUpDeleteCard);
 modal.addEventCloseBlur(popUpDeleteCard);
+
+modal.addEventCloseBtn(popUpNewCard);
+modal.addEventCloseBlur(popUpNewCard);
 addEventOpenPopUpNew(popUpNewCard, ".profile__add-button");
 
 modal.addEventCloseBtn(popUpEdit);
@@ -131,9 +128,9 @@ function handleFormEditProfileSubmit(evt) {
 
       textFields.infoDescription.textContent = data.about;
       textFields.infoTitle.textContent = data.name;
+      modal.closePopUp();
     })
     .finally(() => {
-      modal.closePopUp();
       submitBtn.textContent = saveText;
     })
     .catch((err) => {
@@ -166,9 +163,9 @@ function handleFormNewPlaceSubmit(evt) {
   addNewCard(itemCard)
     .then((data) => {
       renderCard(data, removeCard, likeCard, openPopUpImage);
+      modal.closePopUp();
     })
     .finally(() => {
-      modal.closePopUp();
       submitBtn.textContent = saveText;
     })
     .catch((err) => {
@@ -191,9 +188,10 @@ function handleUpdateAvatarSubmit(evt) {
   updateAvatar(link.value)
     .then((data) => {
       profileImage.style.backgroundImage = `url("${data.avatar}")`;
+      modal.closePopUp();
     })
     .finally(() => {
-      modal.closePopUp();
+
       submitBtn.textContent = saveText;
     })
     .catch((err) => {
@@ -220,7 +218,6 @@ function handleDeleteCardSubmit(evt) {
       modal.closePopUp();
     })
     .finally(() => {
-      modal.closePopUp();
       submitBtn.textContent = 'Да';
     })
     .catch((err) => {
@@ -293,46 +290,14 @@ function openPopUpImage(evt) {
 
 //Обработка удаления карточки
 function removeCard(evt) {
-  const idCard = getItemId(evt);
+  const idCard = cards.getItemId(evt.target);
   popUpDeleteCard.setAttribute("data-id", idCard);
   modal.openPopUp(popUpDeleteCard);
 }
 
 //Обработка установки like
 function likeCard(evt) {
-  const idCard = getItemId(evt);
-
-  const element = evt.target;
-
-  const liked = function (data) {
-    cards.like(element);
-    const countElem = element
-      .closest(".card__like")
-      .querySelector(".card__like-count");
-    countElem.textContent = data.likes.length;
-  };
-
-  if (evt.target.classList.contains("card__like-button_is-active")) {
-    deleteLike(idCard)
-      .then((data) => {
-        liked(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  } else {
-    addLike(idCard)
-      .then((data) => {
-        liked(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-}
-
-function getItemId(evt) {
-  return evt.target.closest(".places__item").dataset.id;
+  cards.like(evt.target);
 }
 
 // Добавления карточки в DOM
@@ -360,7 +325,7 @@ function initial() {
       profileImage.style.backgroundImage = `url("${userInfo.avatar}")`;
       idUser = userInfo._id;
 
-      const serverCards = responses[1];
+      const serverCards = responses[1].reverse();
       serverCards.forEach((item) => {
         renderCard(item, removeCard, likeCard, openPopUpImage);
       });

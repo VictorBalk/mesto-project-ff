@@ -10,27 +10,14 @@ export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-
-      // если ошибка, отклоняем промис
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      // если ошибка, отклоняем промис
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 export const updateUserInfo = (profile) => {
@@ -42,12 +29,7 @@ export const updateUserInfo = (profile) => {
       about: profile.about
     })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 
@@ -57,12 +39,7 @@ export const updateAvatar = (link) => {
     method: "PATCH",
     body: JSON.stringify({ avatar: link })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 
@@ -72,13 +49,7 @@ export const addNewCard = (itemCard) => {
     method: "POST",
     body: JSON.stringify({ name: itemCard.name, link: itemCard.link })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      // если ошибка, отклоняем промис
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 export const deleteCard = (idCard) => {
@@ -86,12 +57,7 @@ export const deleteCard = (idCard) => {
     headers: config.headers,
     method: "DELETE",
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 export const deleteLike = (idCard) => {
@@ -99,12 +65,7 @@ export const deleteLike = (idCard) => {
     headers: config.headers,
     method: "DELETE",
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
 
 export const addLike = (idCard) => {
@@ -112,11 +73,14 @@ export const addLike = (idCard) => {
     headers: config.headers,
     method: "PUT",
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(res => processResponse(res));
 }
+
+function processResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
 
